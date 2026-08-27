@@ -1,0 +1,9 @@
+# Element manifest — see format/PACK_SPEC.md for the schema.
+format: "1.0"
+pack: "{{pack_name}}"
+version: {{version}}
+built: "{{built_date}}"
+source:
+  kind: "{{source_kind}}"        # project | document | web | research | mixed
+  refs: []                       # repo@commit, URLs, file paths
+elements: []

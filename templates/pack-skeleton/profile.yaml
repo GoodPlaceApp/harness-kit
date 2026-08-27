@@ -1,0 +1,23 @@
+# Profile of the SOURCE this pack was built from. The target's profile is derived
+# separately at apply time and may differ. See format/PROFILES.md.
+stack:
+  languages: []
+  package_managers: []
+  build: null
+  test_runner: null
+  test_runners_secondary: []
+  ci: null
+  deploy_target: null
+  ui_surface: null
+  vcs_host: null
+applies:
+  has-agents: null
+  has-production: null
+  has-users: null
+  handles-user-data: null
+  has-ui: null
+  is-public: null
+  has-deps: null
+  has-schema: null
+  is-multi-env: null
+  costs-money: null

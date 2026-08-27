@@ -1,0 +1,10 @@
+{
+  "name": "harness-kit",
+  "description": "Extract, ingest, apply, merge and audit portable engineering harnesses — the way a project is worked on, captured as a project-agnostic pack.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Matthias Schenk"
+  },
+  "repository": "https://github.com/GoodPlaceApp/harness-kit",
+  "license": "UNLICENSED"
+}
