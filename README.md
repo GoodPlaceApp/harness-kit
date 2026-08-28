@@ -8,7 +8,7 @@ model routing, the knowledge base, the toolchain including MCP and LSP, operatio
 security, economics, conventions — the team guidelines and company guidelines a solo
 developer still needs, minus the team and the company.
 
-## The five operations
+## The six operations
 
 | command | does |
 |---|---|
@@ -44,6 +44,35 @@ Three properties on every element make packs survive the move between projects:
 - **Evidence** — `production` › `documented` › `claimed` › `derived`, with a corroboration
   count. This is why a conference talk cannot quietly overrule a practice that has been
   load-bearing for months.
+
+## Status — what is exercised, and what is only written
+
+The skills are agent instructions rather than compiled code, so "written" and "working" sit
+closer together here than in ordinary software. They are still not the same thing, and this
+says which is which.
+
+| operation | status |
+|---|---|
+| **extract** | **Exercised end to end.** Six parallel scouts over twelve layers of a live production repo → 103 elements, 92% of applicable slots, nine discrepancies found in a codebase its owner knows well — including a stale ship-mechanism description flagged independently by four of six scouts. |
+| **promote** | Written. The scout-side half (`unhoused` findings) is in the contract; no promotion has been run. |
+| **ingest · apply · merge · audit** | **Specified, never run.** The protocols are complete and the format they operate on is validated by the suite, but no invocation has happened. |
+
+What *is* mechanically enforced, on every commit:
+
+```
+python3 -m pytest tests/ -q        # 22 checks, green on a fresh clone with no pack library
+```
+
+The load-bearing one is `test_universal_statements_name_no_tool_or_language`, which enforces
+the stack-neutrality claim the whole format rests on instead of leaving it asserted in prose.
+It caught a real leak the day it was written. Others pin that every slot is phrased as a
+question, that generated files match their manifest, that no shelf entry claims to have been
+observed, and that every vocabulary slot in a pack is answered, named as a gap, or excluded —
+silence is not an option.
+
+Roughly 490 lines of executable code against 2,000 of specification. That ratio is the point
+rather than an accident: the skills *are* the product, and the code exists to keep them
+honest.
 
 ## Format
 
@@ -141,3 +170,7 @@ Packs live in `GoodPlaceApp/harness-packs`, not here.
 A pack is a directory, and also a self-contained instruction set: `PACK.md` alone is enough
 for an agent with none of this installed to apply it by hand. If that is not true of a pack,
 it is a tool output rather than a portable artifact.
+
+## Licence
+
+MIT — see [LICENSE](LICENSE).
