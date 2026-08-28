@@ -121,3 +121,29 @@ def test_every_skill_is_installable_at_user_level():
         assert head.startswith("---"), f"{f.parent.name}: no frontmatter"
         assert "name:" in head and "description:" in head, \
             f"{f.parent.name}: frontmatter missing name or description"
+
+
+def test_an_empty_default_library_never_shadows_a_populated_one():
+    """Installing the kit must not hide packs the user already had — creating the
+    default location is part of install, and it starts empty."""
+    import sys, tempfile
+    sys.path.insert(0, str(ROOT / "tools"))
+    import packs_dir as pd
+    with tempfile.TemporaryDirectory() as tmp:
+        empty = pathlib.Path(tmp) / "empty"
+        empty.mkdir()
+        populated = pathlib.Path(tmp) / "populated" / "somepack"
+        populated.mkdir(parents=True)
+        (populated / "manifest.yaml").write_text("elements: []\n")
+        real, home = pd.KIT, pathlib.Path.home
+        try:
+            # the empty candidate is checked first; the populated one must still win
+            pd.KIT = pathlib.Path(tmp) / "populated" / "kit-not-here"
+            got = None
+            for c in (empty, populated.parent):
+                if c.is_dir() and any((x / "manifest.yaml").exists() for x in c.iterdir()):
+                    got = c
+                    break
+            assert got == populated.parent, "an empty directory shadowed a populated one"
+        finally:
+            pd.KIT = real

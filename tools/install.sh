@@ -10,6 +10,8 @@ KIT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODE="${1:-symlink}"
 
 mkdir -p ~/.claude/skills ~/.claude/agents
+# Packs are private data and belong outside every repository — see tools/packs_dir.py
+mkdir -p ~/.harness/packs
 
 for d in "$KIT"/skills/*/; do
   name="$(basename "$d")"
@@ -28,4 +30,5 @@ done
 
 echo
 echo "installed from $KIT"
+echo "pack library: ~/.harness/packs  (outside every repo; git init it if you want history)"
 echo "Set HARNESS_KIT=$KIT in your shell profile if the kit lives anywhere unusual."
