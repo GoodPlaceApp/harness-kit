@@ -1,0 +1,8 @@
+# A Kotlin Multiplatform mobile app: no production, no schema, no spend, Gradle tests.
+name: synthetic gradle/mobile target
+stack: {languages: [kotlin], package_managers: [gradle], build: gradle,
+        test_runner: gradle, ci: none, deploy_target: app-store, ui_surface: mobile,
+        vcs_host: github}
+applies: {has-agents: true, has-production: false, has-users: false,
+          handles-user-data: false, has-ui: true, is-public: true, has-deps: true,
+          has-schema: false, is-multi-env: false, costs-money: false}

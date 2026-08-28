@@ -54,8 +54,9 @@ says which is which.
 | operation | status |
 |---|---|
 | **extract** | **Exercised end to end.** Six parallel scouts over twelve layers of a live production repo → 103 elements, 92% of applicable slots, nine discrepancies found in a codebase its owner knows well — including a stale ship-mechanism description flagged independently by four of six scouts. |
+| **apply** | **Planning half exercised.** `tools/apply_plan.py` produced real plans for two targets unlike the source — a Kotlin Multiplatform mobile app and a Node server. Every foreign-stack recipe deferred; the Run and Economics layers skipped for having no production or spend; ~78 of 103 elements still transferred. The writing half has not been run. |
 | **promote** | Written. The scout-side half (`unhoused` findings) is in the contract; no promotion has been run. |
-| **ingest · apply · merge · audit** | **Specified, never run.** The protocols are complete and the format they operate on is validated by the suite, but no invocation has happened. |
+| **ingest · merge · audit** | **Specified, never run.** The protocols are complete and the format they operate on is validated by the suite, but no invocation has happened. |
 
 What *is* mechanically enforced, on every commit:
 
@@ -63,9 +64,12 @@ What *is* mechanically enforced, on every commit:
 python3 -m pytest tests/ -q        # 22 checks, green on a fresh clone with no pack library
 ```
 
-The load-bearing one is `test_universal_statements_name_no_tool_or_language`, which enforces
-the stack-neutrality claim the whole format rests on instead of leaving it asserted in prose.
-It caught a real leak the day it was written. Others pin that every slot is phrased as a
+Two are load-bearing. `test_universal_statements_name_no_tool_or_language` enforces the
+stack-neutrality claim the whole format rests on instead of leaving it asserted in prose — it
+caught a real leak the day it was written. `test_no_foreign_stack_recipe_is_ever_planned_for_this_target`
+pins the portability claim itself: it plans a real pack against a Gradle mobile target and
+fails if a single foreign-stack mechanism would be installed. A pytest selector in a Gradle
+repo is worse than nothing, because it looks done. Others pin that every slot is phrased as a
 question, that generated files match their manifest, that no shelf entry claims to have been
 observed, and that every vocabulary slot in a pack is answered, named as a gap, or excluded —
 silence is not an option.

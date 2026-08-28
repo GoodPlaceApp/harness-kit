@@ -55,6 +55,31 @@ a privacy policy or a users table implies `handles-user-data`, a public remote i
 and expensive to leave — a false `has-users` fills the pack with support-triage obligations
 nobody needs.
 
+### Current state on extract, intended state on apply
+
+The same predicate is read two different ways depending on the operation, and conflating
+them breaks apply badly.
+
+**`extract` reads the source as it is.** A project with no deployment has
+`has-production: false`, and the Run layer is honestly excluded from its pack.
+
+**`apply` reads the target as it is *meant to become*.** This matters most for
+`has-agents`: a repository being given a harness for the first time has no agent
+configuration *yet* — that is the whole reason it is being applied. Deriving
+`has-agents: false` from its current state would skip the entire Agents layer plus the
+agent-facing brief, the dispatch queue, harness configuration and the language-server and
+server declarations, and install a harness containing nothing about agents. The predicate
+answers "will this be true once this pack is applied", not "is this true now".
+
+So apply asks rather than detects wherever the two readings diverge. The rule of thumb:
+predicates about **circumstance** — `has-production`, `has-users`, `handles-user-data`,
+`has-schema`, `is-multi-env`, `costs-money`, `is-public` — are detected, because intent
+does not change them. Predicates about **practice** — `has-agents` above all — are
+intentions, and are confirmed with the human in the single question round.
+
+*(Found by applying a production-extracted pack to a Kotlin mobile app and a Node server,
+neither of which had any agent configuration.)*
+
 ---
 
 ## Portability tiers — how a mechanism survives the move
