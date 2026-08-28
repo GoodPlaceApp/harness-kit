@@ -17,6 +17,7 @@ developer still needs, minus the team and the company.
 | `/harness-apply <pack> [--graft \| --replace] [--dry-run]` | Install or graft a pack into a target project |
 | `/harness-merge <pack-a> <pack-b>` | Combine two packs, keeping the stronger half of each |
 | `/harness-audit` | Report where a project has drifted from the pack it applied |
+| `/harness-promote` | Fold a practice found in one project back into the kit — a new question, or a new default |
 
 `extract` and `ingest` are peers. A practice observed running in production and a practice
 read out of a handbook land in the same format and can be compared, ranked and merged.
@@ -73,16 +74,47 @@ Three properties on every element make packs survive the move between projects:
 Layers 07–09 and 11–12 exist because a first draft without them silently dropped operations,
 security, cost and self-measurement from every export.
 
-## Install
+## Install — on any machine
 
 ```bash
+gh auth login                                             # once per machine
 gh repo clone GoodPlaceApp/harness-kit ~/GitProjects/harness-kit
 claude
 > /plugin install ~/GitProjects/harness-kit
 ```
 
-Installed once, available in every project on the machine — which is what makes it possible
-to extract from one repo and apply into another.
+Installed once, available in every project on that machine — which is what makes it possible
+to extract from one repo and apply into another. Install from the local clone rather than
+the remote: the kit is edited constantly, and a path install picks changes up without a
+reinstall.
+
+**This repo is also the pack library.** Extractions land in `packs/`, so the sync ritual
+between machines is ordinary git:
+
+```bash
+git -C ~/GitProjects/harness-kit pull      # before extracting — get the current vocabulary
+# … /harness-extract, /harness-promote …
+git -C ~/GitProjects/harness-kit push      # after — publish the pack and any kit changes
+```
+
+Pull first matters more than it looks: an extraction run against a stale vocabulary produces
+a pack missing every slot added since, and those show up as gaps that are not really gaps.
+
+## How the kit learns
+
+The vocabulary is fixed *per extraction*, not forever. When a project answers something the
+vocabulary never asked, the scout parks it under `unhoused` rather than discarding it, and
+`/harness-promote` folds it back into the kit as one of two things:
+
+- **a new slot** — a question every future extraction now asks. Existing packs stay valid;
+  the new slot simply appears as an honest gap in each of them.
+- **a new shelf default** — a better answer to a question already asked, offered to every
+  future project that leaves that slot empty.
+
+One rule keeps the loop from eating itself: a shelf entry lifted out of project X records
+`derived_from: X`, and merge refuses to count it as independent corroboration against a pack
+from X. Otherwise every promotion would quietly inflate the evidence for whatever the kit
+already believed.
 
 ## Packs
 

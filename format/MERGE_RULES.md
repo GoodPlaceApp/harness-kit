@@ -57,6 +57,13 @@ Criteria in strict order — a later criterion only breaks a tie in the earlier 
    one `production` observation *only* when that observation is itself a single project's
    local habit — which the extractor marks by leaving `rationale` thin. Otherwise
    criterion 1 holds.
+
+   **Independence is checked, not assumed.** A shelf entry carrying
+   `provenance.derived_from: X` was lifted out of project X by `/harness-promote`. It does
+   **not** count as corroboration against a pack extracted from X — that is one project
+   counted twice, and left unchecked it would inflate the evidence for whatever the kit
+   already believes every time the kit learns something. Two chapters of one book, two
+   articles restating one talk, and a shelf entry meeting its own origin are all one source.
 3. **Specificity.** A statement that says what to do beats one that says to care.
    "Reviewed by a stronger model before merge" beats "code quality matters".
 4. **Portability.** `U` › `S` › `P`. A rule that survives the next move is worth more than

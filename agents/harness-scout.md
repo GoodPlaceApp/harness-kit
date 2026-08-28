@@ -128,9 +128,23 @@ Rules for the return:
 
 - **One element per slot at most.** Two competing answers in one slot means you found a
   discrepancy — report it as one.
-- **`gaps` and `unknowns` are different.** A gap is "this source has no answer". An unknown
-  is "this source may have an answer but only a human can confirm which". Unknowns become
-  cards for the human; gaps get offered a shelf default.
+- **`gaps`, `unknowns` and `unhoused` are three different things.** A gap is "this source
+  has no answer". An unknown is "this source may have an answer but only a human can confirm
+  which". **Unhoused** is "this source clearly has a practice here and no slot asks about
+  it" — and that is the most valuable thing you can return, because it is how the vocabulary
+  grows. Never discard a practice because it did not fit; park it in `unhoused` with the
+  question you would have had to ask to house it.
+
+  ```yaml
+  unhoused:
+    - candidate_question: "How is a source's licence re-checked after it is adopted?"
+      practice: <what this source actually does>
+      citations: ["docs/system/LICENSING_MATRIX.md:12"]
+      nearest_slot: trust.source-terms      # and why it does not fit
+  ```
+
+  Unknowns become cards for the human; gaps get offered a shelf default; unhoused findings
+  go to `/harness-promote`.
 - **`mechanism.content` is optional** and belongs only where a concrete file is worth
   carrying: agent definitions, skill bodies, config fragments, CI steps, doc templates,
   short scripts. Omit it for statements that need no file. Never inline a large file — for
