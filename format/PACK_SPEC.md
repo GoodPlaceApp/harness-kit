@@ -1,6 +1,6 @@
 # Pack format
 
-**Format version: 1.0**
+**Format version: 1.1**
 
 A *pack* is a portable description of how a project is worked on. It is produced by
 `extract` (from a repo) or `ingest` (from documents, URLs, or a research topic), consumed by
@@ -169,3 +169,14 @@ diff between versions is a legitimate way to see how a way of working has change
 Format version changes when the element schema or the slot vocabulary changes. Adding a
 slot is a minor bump; renaming or removing one is a major bump and requires a migration
 note in this file. Slot ids are never recycled.
+
+### 1.0 → 1.1
+
+Adds `work.memory` — *what knowledge outlives a session without living in the repository,
+and what belongs there rather than in the docs?* Promoted after an extraction was found to
+read only the repository, while twenty files of durable project knowledge sat in the
+project's user-level state directory and were never opened.
+
+**Packs built at 1.0 stay valid.** The new slot simply appears as an unanswered gap in each
+of them, which is the honest state and the signal for which projects are worth re-scouting.
+Also allows list-form `provenance` for elements fused by `merge`.

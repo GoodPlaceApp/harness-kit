@@ -38,9 +38,22 @@ difference between a personal tool and a product changes twenty slots.
 
 ## 2 · Fan out one scout per layer
 
+Before dispatching, locate the project's user-level state:
+
+```bash
+python3 {KIT}/tools/user_state.py <target>
+```
+
+A harness has a half that does not live in the repository — durable memory, accumulated
+preferences, and the rules a human gave by correcting an agent rather than by writing a
+document. An extraction that reads only the checkout misses them, and misses them silently.
+Pass what that tool lists to every scout alongside the repo path. **Never read the session
+transcripts it excludes**, and carry its excluded count into the report so the extraction is
+honest about what it declined to open.
+
 Dispatch `harness-scout` twelve times in parallel — one per layer. Each dispatch carries:
 the layer id, that layer's slot table **verbatim** from `SLOTS.md`, the target path, the
-source kind (`project`), and both profiles.
+user-level durable files, the source kind (`project`), and both profiles.
 
 Do not read the whole project yourself first. The scouts are the readers; your job is
 orchestration and reconciliation. Reading everything twice wastes the context that the
@@ -60,6 +73,10 @@ Scouts work blind to each other. When their returns land:
   and cross-reference from the other.
 - **Contradictions between scouts** go into the pack's discrepancy list and, if they matter
   to a statement, into the question round.
+- **Rules duplicated across the repo/user-level boundary** are a discrepancy in their own
+  right: two homes for one fact, and the copies will drift. A rule found *only* at user level
+  is more serious still — it is invisible to anyone who clones the repository, so say so
+  plainly and let the human decide whether it should move into the docs.
 - **Confidence.** Anything `low` either gets verified by you directly or becomes a card.
   Do not launder a low-confidence guess into a pack element.
 
@@ -133,6 +150,6 @@ nobody will look is a pack that was not written.
 - `PACK.md` stands alone: read it as if you had never seen this repo, and confirm you could
   apply the pack from it.
 
-Report: coverage numbers, the layers that came out thin, the discrepancies found, and what
-went in from the shelf. Do not report a pack as complete when its gap list is long — say
+Report: coverage numbers, the layers that came out thin, the discrepancies found, what went
+in from the shelf, and **how much user-level state was read against how much was excluded**. Do not report a pack as complete when its gap list is long — say
 what is missing.

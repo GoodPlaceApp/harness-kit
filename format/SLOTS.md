@@ -129,7 +129,9 @@ for agent-authored commits.
 ## 05 · Workstate — the knowledge base agents and humans read
 
 *Where to look:* the docs tree and its index, archive folders, naming patterns across
-filenames, the project brief, any handoff or session-state file, memory directories.
+filenames, the project brief, any handoff or session-state file — **and the project's
+user-level state directory**, which holds durable memory outside the repository. See
+`tools/user_state.py`; never read the session transcripts there.
 
 | slot | question | applies |
 |---|---|---|
@@ -143,6 +145,7 @@ filenames, the project brief, any handoff or session-state file, memory director
 | `work.onboarding` | In what order does a newcomer — human or fresh agent — read? | always |
 | `work.danger-list` | Where is the register of things not to change without understanding? | always |
 | `work.research-cache` | Where does external research land so it is not re-fetched? | always |
+| `work.memory` | What knowledge outlives a session without living in the repository, and what belongs there rather than in the docs? | always |
 | `work.queue` | Where do ready-to-run task prompts live, and when is one removed? | has-agents |
 
 ---

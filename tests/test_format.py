@@ -147,3 +147,31 @@ def test_an_empty_default_library_never_shadows_a_populated_one():
             assert got == populated.parent, "an empty directory shadowed a populated one"
         finally:
             pd.KIT = real
+
+
+def test_user_state_never_exposes_session_transcripts():
+    """The state directory holds one transcript per session — enormous, and containing
+    every keystroke including anything pasted in. They are a privacy surface, not harness
+    content, and no operation may read them."""
+    import sys, tempfile
+    sys.path.insert(0, str(ROOT / "tools"))
+    import user_state as us
+    with tempfile.TemporaryDirectory() as tmp:
+        home = pathlib.Path(tmp)
+        repo = home / "someproject"
+        repo.mkdir()
+        d = home / ".claude" / "projects" / str(repo.resolve()).replace("/", "-")
+        (d / "memory").mkdir(parents=True)
+        (d / "memory" / "a-rule.md").write_text("a durable rule\n")
+        (d / "sess-1.jsonl").write_text('{"secret":"should never be read"}\n')
+        (d / "sess-1").mkdir()
+        real_home = pathlib.Path.home
+        try:
+            pathlib.Path.home = staticmethod(lambda: home)
+            got = us.readable(repo)
+            assert [f.name for f in got] == ["a-rule.md"], f"read the wrong files: {got}"
+            assert us.excluded_count(repo) == 1
+            assert not any(f.suffix == ".jsonl" for f in got), \
+                "a session transcript reached a caller"
+        finally:
+            pathlib.Path.home = real_home

@@ -27,6 +27,23 @@ repo source, the highest-yield reads are usually: the agent-facing project brief
 workflow files, test configuration, `.claude/` in full, and the shape of the last hundred
 commits. For a document source, read the whole document — do not sample.
 
+**A project's harness has a user-level half, and it is easy to miss entirely.** Durable
+memory, accumulated preferences and the rules a human gave by *correcting* an agent rather
+than by writing a document live beside the tool, not inside the repository. Run
+`python3 {KIT}/tools/user_state.py <repo>` to locate them, and read what it lists.
+
+Two hard rules there. **Read only what that tool returns** — the same directory holds one
+transcript per session, enormous and containing every keystroke including anything pasted
+in. They are not harness content, they are a privacy surface, and reading them would flood
+your context. **Report the excluded count** so the extraction is honest about what it did
+not read.
+
+**Duplication across that boundary is a finding, not a convenience.** A rule written in both
+the repository docs and the user-level memory has two homes, and the copies will drift. When
+you see it, report it under `discrepancies` naming both locations — do not silently prefer
+one. A rule that exists *only* at user level is the more interesting case: it is invisible
+to anyone who clones the repository, and it should be surfaced loudly.
+
 Read the actual files. Do not answer a slot from what a repo of this kind usually does.
 
 ## Evidence discipline
