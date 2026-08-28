@@ -152,11 +152,21 @@ def render_coverage(pack, man, questions):
     for n in nas:
         d = "  **(disputed — see open question Q1)**" if n.get("disputed") else ""
         L.append(f"- **`{n['slot']}`** — {n['why']}{d}")
-    L += ["", "## From the shelf", "",
-          "None. Every element in this pack came from the source; no best-practice "
-          "defaults were accepted. The gaps above are offered shelf defaults at apply "
-          "time, individually, and an accepted one enters marked `provenance.source: "
-          "shelf` so it can never be mistaken for observed practice.", ""]
+    shelf = [e for e in man["elements"]
+             if (e.get("provenance") or {}).get("source") == "shelf"]
+    L += ["", "## From the shelf", ""]
+    if shelf:
+        L += [f"{len(shelf)} element{'s' if len(shelf) != 1 else ''} did **not** come from "
+              "the source. Each was offered against a confirmed gap and accepted "
+              "individually, and each carries `provenance.source: shelf` so it can never be "
+              "mistaken for observed practice.", ""]
+        for e in shelf:
+            L.append(f"- **`{e['slot']}`** — {e['title']} "
+                     f"(`{e['evidence']}`, {e.get('corroboration', 0)} independent sources)")
+        L.append("")
+    else:
+        L += ["None. Every element in this pack came from the source; no best-practice "
+              "defaults were accepted.", ""]
     if man.get("discrepancies"):
         L += ["## Discrepancies found", "",
               "Places the source contradicts itself. Reported, never silently resolved — "
