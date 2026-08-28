@@ -61,11 +61,12 @@ def test_every_vocabulary_slot_is_accounted_for(pack):
     path, man = pack
     seen = ({e["slot"] for e in man["elements"]}
             | {g["slot"] for g in man.get("gaps", [])}
+            | {c["slot"] for c in man.get("not_covered_by_source", [])}
             | {n["slot"] for n in man.get("not_applicable", [])})
     missing = _vocab() - seen
     assert not missing, (
-        f"{path.name}: {len(missing)} slots neither answered, nor named as a gap, "
-        f"nor excluded: {sorted(missing)[:8]}")
+        f"{path.name}: {len(missing)} slots neither answered, nor named as a gap, nor "
+        f"marked outside the source, nor excluded: {sorted(missing)[:8]}")
 
 
 def test_element_required_fields(pack):

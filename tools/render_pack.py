@@ -119,10 +119,12 @@ def slot_layer_of(slot, man):
 def render_coverage(pack, man, questions):
     by_layer = collections.Counter(e["layer"] for e in man["elements"])
     gaps, nas = man.get("gaps", []), man.get("not_applicable", [])
+    ncs = man.get("not_covered_by_source", [])
     gl = collections.Counter(slot_layer_of(g["slot"], man) for g in gaps)
     nl = collections.Counter(slot_layer_of(n["slot"], man) for n in nas)
+    cl = collections.Counter(slot_layer_of(c["slot"], man) for c in ncs)
 
-    total_app = len(man["elements"]) + len(gaps)
+    total_app = len(man["elements"]) + len(gaps) + len(ncs)
     pct = round(100 * len(man["elements"]) / total_app)
     bar = "█" * round(pct / 5) + "░" * (20 - round(pct / 5))
 
@@ -133,10 +135,12 @@ def render_coverage(pack, man, questions):
          f"{len(nas)} further slots do not apply to this source and are excluded "
          f"rather than counted against it. All {total_app + len(nas)} vocabulary "
          "slots are accounted for.", "",
-         "| layer | answered | gaps | not applicable |", "|---|---|---|---|"]
+         "| layer | answered | gaps | outside the source | not applicable |",
+         "|---|---|---|---|---|"]
     for key, title in LAYER_TITLES.items():
         L.append(f"| {title.split(' — ')[0]} | {by_layer.get(key, 0)} "
-                 f"| {gl.get(key, 0) or '—'} | {nl.get(key, 0) or '—'} |")
+                 f"| {gl.get(key, 0) or '—'} | {cl.get(key, 0) or '—'} "
+                 f"| {nl.get(key, 0) or '—'} |")
     L += ["", "## Gaps", "",
           "Slots that apply to this source and have no answer. Each was checked, "
           "not assumed — an extraction that hides its holes is worth less than one "
@@ -145,6 +149,13 @@ def render_coverage(pack, man, questions):
         shelf = " · *a shelf default is available*" if g.get("shelf_available") else ""
         L += [f"### `{g['slot']}`{shelf}", "",
               f"*{questions.get(g['slot'], '?')}*", "", g["why"].strip(), ""]
+    if ncs:
+        L += ["## Outside the source's subject", "",
+              f"{len(ncs)} slots this source simply does not address. **Not gaps in the "
+              "source, and not excluded by profile** — questions this material does not "
+              "answer. Merging with a pack that does answer them is precisely what this "
+              "pack is for.", "",
+              ", ".join(f"`{c['slot']}`" for c in ncs), ""]
     L += ["## Not applicable", "",
           "Excluded by this source's profile. These are **not** gaps, and they are "
           "re-evaluated against the *target's* profile at apply time — a target that "
