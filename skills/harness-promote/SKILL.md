@@ -76,7 +76,7 @@ So every promoted shelf entry records where it came from:
 ```yaml
 provenance:
   source: shelf
-  derived_from: meridian          # the pack this was lifted out of
+  derived_from: acme-api          # the pack this was lifted out of
 ```
 
 and `merge` must not count such an entry as independent corroboration against any pack from

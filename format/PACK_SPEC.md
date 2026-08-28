@@ -62,7 +62,7 @@ One element answers one slot. Elements are the unit of merge, of apply, and of a
   applies_when: has-agents               # inherited from the slot unless narrowed
   provenance:
     source: project                      # project | document | web | research | shelf
-    ref: meridian@64381d2
+    ref: acme-api@64381d2
     path: .claude/agents/opus-reviewer.md
     quote: null                          # required when source is not `project`
   evidence: production                   # production | documented | claimed | derived
@@ -137,7 +137,7 @@ Written into the target repo at `.harness/pack.lock` by `apply`.
 ```yaml
 format: 1.0
 applied:
-  - pack: meridian-v1
+  - pack: acme-api-v1
     version: 1
     at: 2026-08-28
     mode: graft                # graft | replace

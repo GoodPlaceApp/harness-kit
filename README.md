@@ -174,7 +174,7 @@ Packs live in `GoodPlaceApp/harness-packs`, not here.
 
 | pack | from | evidence |
 |---|---|---|
-| `meridian-v1` | practice — a live agent-run project | `production` |
+| an extracted pack | practice — a live agent-run project | `production` |
 | `theory-review-v1` *(not yet built)* | theory — external engineering canon | `documented` / `claimed` |
 
 A pack is a directory, and also a self-contained instruction set: `PACK.md` alone is enough

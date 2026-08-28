@@ -107,7 +107,7 @@ accepts the recommendation.
 ```
 C1 · gov.decision-record — how a ruling is kept
 
-   A  meridian-v1        Rulings are recorded the same day in a standing
+   A  acme-api-v1        Rulings are recorded the same day in a standing
       evidence: production   decisions file, are binding, and are reversed
       corroboration: 1       only by a new dated entry — never a silent edit.
 
@@ -162,7 +162,7 @@ sums corroboration across origins it does not name has over-claimed by construct
 
 ```yaml
   provenance:
-    - {source: project, ref: "meridian@3912b82", path: "docs/…", evidence: production, corroboration: 1}
+    - {source: project, ref: "acme-api@a1b2c3d", path: "docs/…", evidence: production, corroboration: 1}
     - {source: web, ref: "Google SRE Book Ch. 15 — https://…", quote: "…", evidence: documented, corroboration: 1}
   corroboration: 2          # equals the number of INDEPENDENT origins listed above
 ```

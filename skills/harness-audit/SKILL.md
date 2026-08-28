@@ -54,7 +54,7 @@ Kept separate, because they mean different things:
 ## 5 · Report
 
 ```
-PACK  meridian-v1 v1 · applied 2026-08-28 · graft
+PACK  acme-api-v1 v1 · applied 2026-08-28 · graft
 
 PROFILE   unchanged
 
