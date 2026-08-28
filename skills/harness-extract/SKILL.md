@@ -112,9 +112,12 @@ Copy `${CLAUDE_PLUGIN_ROOT}/templates/pack-skeleton/` to the output path, then f
 - `PACK.md` — identity, summary, coverage at a glance, the standalone apply protocol from
   the skeleton, and the binding table inline.
 
-Default output: `packs/<project>-v<n>/` in the harness-kit repo, `n` incrementing on
-re-extraction. A diff between two versions is a legitimate way to see how a way of working
-has changed.
+Default output: the pack library, resolved by `tools/packs_dir.py` — `$HARNESS_PACKS`,
+else a sibling `harness-packs/` clone, else a legacy in-repo `packs/`. Name it
+`<project>-v<n>/`, `n` incrementing on re-extraction; a diff between two versions is a
+legitimate way to see how a way of working has changed. If no pack library resolves, say
+so and write to an explicit path rather than inventing one — a pack written somewhere
+nobody will look is a pack that was not written.
 
 ## 8 · Verify before reporting
 

@@ -88,16 +88,29 @@ to extract from one repo and apply into another. Install from the local clone ra
 the remote: the kit is edited constantly, and a path install picks changes up without a
 reinstall.
 
-**This repo is also the pack library.** Extractions land in `packs/`, so the sync ritual
-between machines is ordinary git:
+**Two repositories, on purpose.** This one is the **tool** and carries nothing
+project-specific. Packs are **data** — they carry deploy shape, service names, cost figures,
+`repo@commit` provenance and any open findings an extraction turned up — and live separately:
 
 ```bash
-git -C ~/GitProjects/harness-kit pull      # before extracting — get the current vocabulary
-# … /harness-extract, /harness-promote …
-git -C ~/GitProjects/harness-kit push      # after — publish the pack and any kit changes
+gh repo clone GoodPlaceApp/harness-packs ~/GitProjects/harness-packs   # sibling clone
 ```
 
-Pull first matters more than it looks: an extraction run against a stale vocabulary produces
+Packs are located by `tools/packs_dir.py`, first hit wins: `$HARNESS_PACKS` · a sibling
+`harness-packs/` · a legacy in-repo `packs/`. **No pack library is a normal state** — the
+kit is fully usable and its whole suite runs standalone, skipping the pack checks.
+
+The sync ritual between machines is ordinary git, in both repos:
+
+```bash
+git -C ~/GitProjects/harness-kit   pull    # BEFORE extracting — get the current vocabulary
+git -C ~/GitProjects/harness-packs pull
+# … /harness-extract, /harness-promote …
+git -C ~/GitProjects/harness-packs push    # the pack
+git -C ~/GitProjects/harness-kit   push    # any new slot or shelf entry promotion produced
+```
+
+Pull-first matters more than it looks: an extraction run against a stale vocabulary produces
 a pack missing every slot added since, and those show up as gaps that are not really gaps.
 
 ## How the kit learns
@@ -118,10 +131,12 @@ already believed.
 
 ## Packs
 
+Packs live in `GoodPlaceApp/harness-packs`, not here.
+
 | pack | from | evidence |
 |---|---|---|
-| `packs/meridian-v1` | practice — a live agent-run project | `production` |
-| `packs/theory-review-v1` | theory — external engineering canon | `documented` / `claimed` |
+| `meridian-v1` | practice — a live agent-run project | `production` |
+| `theory-review-v1` *(not yet built)* | theory — external engineering canon | `documented` / `claimed` |
 
 A pack is a directory, and also a self-contained instruction set: `PACK.md` alone is enough
 for an agent with none of this installed to apply it by hand. If that is not true of a pack,

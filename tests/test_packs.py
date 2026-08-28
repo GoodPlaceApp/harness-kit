@@ -1,9 +1,12 @@
 """Every pack in packs/ must satisfy the format, or it is not portable."""
-import re, pathlib, collections
+import re, sys, pathlib, collections
 import pytest, yaml
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-PACKS = sorted(p for p in (ROOT / "packs").iterdir() if (p / "manifest.yaml").exists())
+sys.path.insert(0, str(ROOT / "tools"))
+from packs_dir import packs as _discover_packs  # noqa: E402
+
+PACKS = _discover_packs()
 TIERS = {"U", "S", "P"}
 EVIDENCE = {"production", "documented", "claimed", "derived"}
 SOURCES = {"project", "document", "web", "research", "shelf"}
@@ -24,7 +27,13 @@ def _vocab():
     return set(re.findall(r"^\| `([a-z0-9._-]+)` \|", txt, re.M))
 
 
-@pytest.fixture(scope="session", params=PACKS, ids=lambda p: p.name)
+pytestmark = pytest.mark.skipif(
+    not PACKS,
+    reason="no pack library found — set HARNESS_PACKS or clone harness-packs "
+           "as a sibling of this repo. The kit is usable and testable without one.")
+
+
+@pytest.fixture(scope="session", params=PACKS or [None], ids=lambda p: p.name if p else "none")
 def pack(request):
     p = request.param
     return p, yaml.safe_load((p / "manifest.yaml").read_text())
@@ -139,16 +148,10 @@ def test_pack_md_stands_alone(pack):
 
 def test_layers_and_coverage_are_in_sync_with_the_manifest(pack, tmp_path):
     """`layers/` and COVERAGE.md are generated. A hand-edit is a defect, not a change."""
-    import shutil, subprocess, sys, filecmp
+    import shutil, subprocess, filecmp
     path, _ = pack
-    work = tmp_path / path.name
-    shutil.copytree(path, work)
-    # the renderer resolves format/ as pack.parent.parent/format
-    shutil.copytree(ROOT / "format", tmp_path.parent / "format", dirs_exist_ok=True)
-    (tmp_path / "packs").mkdir(exist_ok=True)
-    staged = tmp_path / "packs" / path.name
-    shutil.move(str(work), str(staged))
-    shutil.copytree(ROOT / "format", tmp_path / "format", dirs_exist_ok=True)
+    staged = tmp_path / path.name
+    shutil.copytree(path, staged)
     r = subprocess.run([sys.executable, str(ROOT / "tools" / "render_pack.py"), str(staged)],
                        capture_output=True, text=True)
     assert r.returncode == 0, r.stderr

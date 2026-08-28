@@ -178,7 +178,9 @@ def render_coverage(pack, man, questions):
 
 def main():
     pack = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
-    fmt = pack.parent.parent / "format"
+    # The kit is found from this script's own location, so a pack may live anywhere —
+    # in a sibling packs repo, in a target project, or on a scratch path.
+    fmt = pathlib.Path(__file__).resolve().parent.parent / "format"
     man = yaml.safe_load((pack / "manifest.yaml").read_text())
     questions = slot_questions(fmt)
     man["_slot_layers"] = slot_layers(fmt)

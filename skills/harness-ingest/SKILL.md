@@ -99,7 +99,12 @@ list with dates fetched, and `COVERAGE.md` separates three things that look alik
 not: **gaps** (the source addresses this but says nothing useful), **not-covered-by-source**
 (outside the source's subject), and **derived** (the tool's own inference).
 
-Default output: `packs/<topic-or-source>-v<n>/`.
+Default output: the pack library, resolved by `tools/packs_dir.py` — `$HARNESS_PACKS`,
+else a sibling `harness-packs/` clone, else a legacy in-repo `packs/`. Name it
+`<topic-or-source>-v<n>/`, `n` incrementing on re-extraction; a diff between two versions is a
+legitimate way to see how a way of working has changed. If no pack library resolves, say
+so and write to an explicit path rather than inventing one — a pack written somewhere
+nobody will look is a pack that was not written.
 
 ## 8 · Verify before reporting
 
