@@ -5,7 +5,12 @@ description: Install or graft a harness pack into a project — adapting it to t
 
 # Apply a harness pack to a project
 
-Read `${CLAUDE_PLUGIN_ROOT}/format/PROFILES.md` and `PACK_SPEC.md` first — tiers,
+**Where the kit lives.** `{KIT}` below resolves, first hit wins: the `HARNESS_KIT`
+environment variable · `${CLAUDE_PLUGIN_ROOT}` when this was installed as a plugin · a
+sibling of the pack library · `~/GitProjects/harness-kit`. If none resolves, say so and stop
+rather than guessing — every rule this skill applies lives in those files.
+
+Read `{KIT}/format/PROFILES.md` and `PACK_SPEC.md` first — tiers,
 applicability and bindings are what make this work on a repo unlike the one the pack came
 from.
 

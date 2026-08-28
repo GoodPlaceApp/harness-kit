@@ -5,7 +5,12 @@ description: Combine two harness packs into one that keeps the stronger half of 
 
 # Merge two harness packs
 
-`${CLAUDE_PLUGIN_ROOT}/format/MERGE_RULES.md` is the specification. Read it in full before
+**Where the kit lives.** `{KIT}` below resolves, first hit wins: the `HARNESS_KIT`
+environment variable · `${CLAUDE_PLUGIN_ROOT}` when this was installed as a plugin · a
+sibling of the pack library · `~/GitProjects/harness-kit`. If none resolves, say so and stop
+rather than guessing — every rule this skill applies lives in those files.
+
+`{KIT}/format/MERGE_RULES.md` is the specification. Read it in full before
 merging anything — the dispositions, the rubric, and the compatibility test are all defined
 there and this skill does not restate them.
 

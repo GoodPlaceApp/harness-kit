@@ -5,8 +5,13 @@ description: Read a project and emit a portable, project-agnostic harness pack �
 
 # Extract a harness from a project
 
+**Where the kit lives.** `{KIT}` below resolves, first hit wins: the `HARNESS_KIT`
+environment variable · `${CLAUDE_PLUGIN_ROOT}` when this was installed as a plugin · a
+sibling of the pack library · `~/GitProjects/harness-kit`. If none resolves, say so and stop
+rather than guessing — every rule this skill applies lives in those files.
+
 Turn a working project into a pack another project can adopt. Read
-`${CLAUDE_PLUGIN_ROOT}/format/SLOTS.md`, `PACK_SPEC.md` and `PROFILES.md` first — the slot
+`{KIT}/format/SLOTS.md`, `PACK_SPEC.md` and `PROFILES.md` first — the slot
 vocabulary and the element schema are binding, not suggestions.
 
 **Argument:** a path. Defaults to the current repo. May be any checkout, including a clone
@@ -90,7 +95,7 @@ Collect into a single numbered card set:
   or an accident.
 - **Unresolved required bindings** that discovery could not settle.
 - **Ambiguous applicability facts.**
-- **A shelf offer per gap**, where `${CLAUDE_PLUGIN_ROOT}/shelf/` has a defensible default.
+- **A shelf offer per gap**, where `{KIT}/shelf/` has a defensible default.
   Each is accept-or-decline individually. Accepted defaults enter the pack with
   `provenance.source: shelf` and `evidence: claimed`, never disguised as project practice.
 
@@ -101,7 +106,7 @@ questions instead.
 
 ## 7 · Write the pack
 
-Copy `${CLAUDE_PLUGIN_ROOT}/templates/pack-skeleton/` to the output path, then fill:
+Copy `{KIT}/templates/pack-skeleton/` to the output path, then fill:
 
 - `manifest.yaml` — every element in schema.
 - `layers/01..12.md` — generated from the manifest, one readable section per slot. This is

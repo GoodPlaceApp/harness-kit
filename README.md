@@ -112,14 +112,20 @@ security, cost and self-measurement from every export.
 ```bash
 gh auth login                                             # once per machine
 gh repo clone GoodPlaceApp/harness-kit ~/GitProjects/harness-kit
-claude
-> /plugin install ~/GitProjects/harness-kit
+~/GitProjects/harness-kit/tools/install.sh
 ```
 
-Installed once, available in every project on that machine — which is what makes it possible
-to extract from one repo and apply into another. Install from the local clone rather than
-the remote: the kit is edited constantly, and a path install picks changes up without a
-reinstall.
+That symlinks the six skills into `~/.claude/skills/` and the scout into
+`~/.claude/agents/`, making them available in **every project on that machine** — which is
+what lets you extract from one repo and apply into another. Symlinks rather than copies, so
+editing the kit takes effect with no reinstall. Pass `--copy` if symlinked skills are not
+picked up in your setup.
+
+**Deliberately not the plugin system.** `/plugin install` works where it is available and
+bundles the same content, but it is not available in every environment, so the user-level
+install is the primary route. Skills locate the kit by `HARNESS_KIT`, then
+`${CLAUDE_PLUGIN_ROOT}`, then a sibling of the pack library, then `~/GitProjects/harness-kit`
+— so the same skill body works under either installation.
 
 **Two repositories, on purpose.** This one is the **tool** and carries nothing
 project-specific. Packs are **data** — they carry deploy shape, service names, cost figures,

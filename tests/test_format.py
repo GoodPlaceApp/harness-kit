@@ -98,3 +98,26 @@ def test_the_five_operations_and_promote_all_exist():
     for op in ("extract", "ingest", "apply", "merge", "audit", "promote"):
         assert (ROOT / "skills" / f"harness-{op}" / "SKILL.md").exists(), \
             f"skills/harness-{op}/SKILL.md is missing"
+
+
+def test_no_skill_depends_on_a_plugin_only_variable():
+    """CLAUDE_PLUGIN_ROOT resolves to nothing outside the plugin system, and the plugin
+    system is not available everywhere. Any skill naming it must also state the fallback
+    chain, or it breaks silently on a user-level install."""
+    bad = []
+    for f in sorted((ROOT / "skills").glob("*/SKILL.md")):
+        txt = f.read_text()
+        if "CLAUDE_PLUGIN_ROOT" in txt and "HARNESS_KIT" not in txt:
+            bad.append(f.parent.name)
+    assert not bad, (
+        f"skills naming CLAUDE_PLUGIN_ROOT with no fallback resolution: {bad}")
+
+
+def test_every_skill_is_installable_at_user_level():
+    """A skill directory needs a SKILL.md with name and description frontmatter to be
+    discovered outside the plugin system."""
+    for f in sorted((ROOT / "skills").glob("*/SKILL.md")):
+        head = f.read_text()[:400]
+        assert head.startswith("---"), f"{f.parent.name}: no frontmatter"
+        assert "name:" in head and "description:" in head, \
+            f"{f.parent.name}: frontmatter missing name or description"
