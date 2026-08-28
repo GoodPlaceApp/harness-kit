@@ -145,6 +145,28 @@ Rules for cards:
 MERGE_REPORT.md            what happened, in four sections
 ```
 
+**The merged pack must be self-describing.** The report is for a human reading it once; the
+manifest is what every later operation reads. A merged `manifest.yaml` therefore carries the
+same sections any other pack does — `gaps`, `not_applicable`, `not_covered_by_source` where
+it applies, `discrepancies` and `unhoused` unioned from both inputs, and `rulings` recording
+every conflict card and its answer. Writing the accounting only into the report leaves
+`audit` unable to say what the target owes, and leaves the next merge unable to see a gap.
+Recompute all of it against the merged applicability profile rather than inheriting either
+input's.
+
+**Fused elements record both origins structurally.** A reconciled element's `provenance`
+becomes a list, one entry per contributing source, each keeping its own `ref`, `evidence` and
+`corroboration`. Prose in `notes` is not sufficient: the whole point of tracking independence
+is that the *next* merge can check it mechanically, and it cannot read prose. An element that
+sums corroboration across origins it does not name has over-claimed by construction.
+
+```yaml
+  provenance:
+    - {source: project, ref: "meridian@3912b82", path: "docs/…", evidence: production, corroboration: 1}
+    - {source: web, ref: "Google SRE Book Ch. 15 — https://…", quote: "…", evidence: documented, corroboration: 1}
+  corroboration: 2          # equals the number of INDEPENDENT origins listed above
+```
+
 `MERGE_REPORT.md` contains:
 
 1. **Summary counts** — adopted, reconciled, conflicted, gaps; coverage before and after.

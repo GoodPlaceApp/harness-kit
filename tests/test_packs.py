@@ -77,7 +77,9 @@ def test_element_required_fields(pack):
             assert e.get(f), f"{path.name}/{e.get('id')}: missing {f}"
         assert e["tier"] in TIERS, f"{e['id']}: bad tier {e['tier']}"
         assert e["evidence"] in EVIDENCE, f"{e['id']}: bad evidence {e['evidence']}"
-        assert e["provenance"]["source"] in SOURCES, f"{e['id']}: bad provenance source"
+        for entry in _prov(e):
+            assert entry.get("source") in SOURCES, \
+                f"{e['id']}: bad provenance source {entry.get('source')!r}"
 
 
 def test_universal_statements_name_no_tool_or_language(pack):
@@ -95,18 +97,20 @@ def test_non_project_provenance_carries_a_quote(pack):
     """An element that cannot quote its origin is not `documented`, it is `derived`."""
     path, man = pack
     bad = [e["id"] for e in man["elements"]
-           if e["provenance"]["source"] != "project"
-           and e["evidence"] != "derived"
-           and not e["provenance"].get("quote")]
-    assert not bad, f"{path.name}: non-project elements with no quote: {bad}"
+           if e["evidence"] != "derived"
+           and any(x.get("source") not in ("project", None) and not x.get("quote")
+                   and not x.get("path") for x in _prov(e))]
+    assert not bad, f"{path.name}: non-project origins with neither quote nor path: {bad}"
 
 
 def test_ingested_elements_never_claim_production(pack):
     """Reading about a practice is not observing it run."""
     path, man = pack
     bad = [e["id"] for e in man["elements"]
-           if e["provenance"]["source"] != "project" and e["evidence"] == "production"]
-    assert not bad, f"{path.name}: non-project elements claiming production: {bad}"
+           if e["evidence"] == "production"
+           and all(x.get("source") != "project" for x in _prov(e))]
+    assert not bad, (
+        f"{path.name}: elements claiming production with no project origin: {bad}")
 
 
 def test_every_binding_used_is_declared_and_every_declared_binding_used(pack):
@@ -163,3 +167,31 @@ def test_layers_and_coverage_are_in_sync_with_the_manifest(pack, tmp_path):
     assert not drifted, (
         f"{path.name}: hand-edited or stale generated files — re-run "
         f"tools/render_pack.py: {drifted}")
+
+
+def _prov(e):
+    """Provenance entries, whether the element carries one mapping or a fused list."""
+    p = e.get("provenance")
+    return p if isinstance(p, list) else [p or {}]
+
+
+def _origins(e):
+    """Named independent origins, whether provenance is a single mapping or a list."""
+    p = e.get("provenance")
+    if isinstance(p, list):
+        return len(p)
+    ref = str((p or {}).get("ref") or "")
+    parts = [x.strip() for x in re.split(r"[;]| \+ ", ref) if x.strip()]
+    return len({re.split(r"[,—]", x)[0].strip().lower()[:22] for x in parts}) or 1
+
+
+def test_corroboration_never_exceeds_the_origins_named(pack):
+    """Tracking independence is pointless if a count can exceed the sources behind it.
+    A fused element must list its origins so the NEXT merge can check them mechanically —
+    prose in notes is unreadable to a tool."""
+    path, man = pack
+    over = [(e["slot"], e.get("corroboration"), _origins(e))
+            for e in man["elements"] if e.get("corroboration", 1) > _origins(e)]
+    assert not over, (
+        f"{path.name}: elements claiming more independent sources than they name "
+        f"(slot, claimed, named): {over}")

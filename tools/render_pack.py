@@ -85,7 +85,13 @@ def render_layers(pack, man, questions):
             if e.get("notes"):
                 L.append(f"> **Also worth knowing.** {e['notes'].strip()}")
                 L.append("")
-            L.append(f"<sub>Seen at {e['provenance']['path']}</sub>")
+            prov = e["provenance"]
+            if isinstance(prov, list):
+                L.append("<sub>Fused from " + " · ".join(
+                    f"{x.get('from_pack') or x.get('source')}: "
+                    f"{(x.get('path') or x.get('ref') or '?')}" for x in prov) + "</sub>")
+            else:
+                L.append(f"<sub>Seen at {prov.get('path') or prov.get('ref')}</sub>")
             L.append("")
             L.append("---")
             L.append("")
@@ -163,8 +169,11 @@ def render_coverage(pack, man, questions):
     for n in nas:
         d = "  **(disputed — see open question Q1)**" if n.get("disputed") else ""
         L.append(f"- **`{n['slot']}`** — {n['why']}{d}")
+    def _prov(e):
+        pv = e.get("provenance")
+        return pv if isinstance(pv, list) else [pv or {}]
     shelf = [e for e in man["elements"]
-             if (e.get("provenance") or {}).get("source") == "shelf"]
+             if any(x.get("source") == "shelf" for x in _prov(e))]
     L += ["", "## From the shelf", ""]
     if shelf:
         L += [f"{len(shelf)} element{'s' if len(shelf) != 1 else ''} did **not** come from "

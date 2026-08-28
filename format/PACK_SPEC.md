@@ -89,6 +89,10 @@ One element answers one slot. Elements are the unit of merge, of apply, and of a
   correctly overrule later.
 - **`evidence`** — see below. **`provenance.quote`** is mandatory for every non-project
   source: an element that cannot quote its origin is downgraded to `derived`.
+- **`provenance` may be a list** — and must be, for an element fused by `merge` from two
+  sources. Each entry keeps its own `ref`, `evidence` and `corroboration`. The element's
+  top-level `corroboration` then equals the number of independent origins listed, and a
+  count exceeding the origins named is a format error rather than a judgement call.
 - **`check`** is a shell predicate, exit 0 = present. It must be cheap, read-only, and
   false-negative-averse: it is better for audit to miss a subtle drift than to cry wolf.
   `null` is allowed and means "not mechanically checkable" — a large share of Charter and
