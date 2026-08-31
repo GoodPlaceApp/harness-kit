@@ -176,3 +176,36 @@ def test_user_state_never_exposes_session_transcripts():
                 "a session transcript reached a caller"
         finally:
             pathlib.Path.home = real_home
+
+
+def test_referenced_paths_stay_inside_the_allowed_roots():
+    """A note may name a plan that lives outside the note store, and following that
+    reference is how such a document becomes visible. Following it anywhere is not:
+    the plans directory is shared by every project, so only a path a THIS-project note
+    actually names may be read, and never a transcript or a file outside the repo and
+    the tool's own configuration."""
+    import sys, tempfile
+    sys.path.insert(0, str(ROOT / "tools"))
+    import user_state as us
+    with tempfile.TemporaryDirectory() as tmp:
+        home = pathlib.Path(tmp)
+        repo = home / "proj"
+        (repo / "docs").mkdir(parents=True)
+        (repo / "docs" / "plan.md").write_text("the plan\n")
+        outside = home / "elsewhere"
+        outside.mkdir()
+        (outside / "secret.md").write_text("not ours\n")
+        d = home / ".claude" / "projects" / str(repo.resolve()).replace("/", "-")
+        (d / "memory").mkdir(parents=True)
+        (d / "memory" / "note.md").write_text(
+            "see ./docs/plan.md for detail\n"
+            f"and {outside}/secret.md which must NOT be read\n"
+            "and ./sess.jsonl which must NOT be read\n")
+        (repo / "sess.jsonl").write_text("{}\n")
+        real = pathlib.Path.home
+        try:
+            pathlib.Path.home = staticmethod(lambda: home)
+            got = {f.name for f in us.referenced(repo)}
+            assert got == {"plan.md"}, f"followed the wrong references: {got}"
+        finally:
+            pathlib.Path.home = real

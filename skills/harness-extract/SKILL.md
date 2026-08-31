@@ -47,7 +47,9 @@ python3 {KIT}/tools/user_state.py <target>
 A harness has a half that does not live in the repository — durable memory, accumulated
 preferences, and the rules a human gave by correcting an agent rather than by writing a
 document. An extraction that reads only the checkout misses them, and misses them silently.
-Pass what that tool lists to every scout alongside the repo path. **Never read the session
+Pass what that tool lists to every scout alongside the repo path — its durable notes **and
+its referenced files**, which is how a working plan named by a note becomes visible without
+reading a plans directory that every project shares. **Never read the session
 transcripts it excludes**, and carry its excluded count into the report so the extraction is
 honest about what it declined to open.
 

@@ -15,10 +15,12 @@ would flood any context they entered. `readable()` returns the safe subset and n
 """
 from __future__ import annotations   # PEP 604 unions below; stock macOS python3 is 3.9
 
-import sys, pathlib
+import re, sys, pathlib
 
 TRANSCRIPT_SUFFIXES = {".jsonl"}
 DURABLE = ("memory",)          # widen only with a reason; default to excluding
+MAX_REFERENCED = 40            # a note that names a hundred paths is not naming a plan
+_PATH = re.compile(r"(?:\(|\s|^)((?:~|\.{0,2}/)[A-Za-z0-9._~/-]{6,120})")
 
 
 def state_dir(repo: pathlib.Path) -> pathlib.Path | None:
@@ -42,6 +44,42 @@ def readable(repo: pathlib.Path) -> list[pathlib.Path]:
     return out
 
 
+def referenced(repo: pathlib.Path) -> list[pathlib.Path]:
+    """Files a durable note names by path, and that exist.
+
+    Plans, briefs and working documents live outside the note store — for this tool's own
+    host, in a directory shared by EVERY project, which is exactly why the store is not
+    simply widened to include it. Reading that directory wholesale would pull one project's
+    planning into another project's pack. Following a reference is narrow: a note in THIS
+    project's store named this file, so this file is about this project.
+
+    Bounded deliberately: never a transcript, never outside the repository or the tool's own
+    configuration directory, and capped.
+    """
+    roots = [pathlib.Path(repo).resolve(), (pathlib.Path.home() / ".claude").resolve()]
+    out, seen = [], set()
+    for note in readable(repo):
+        for m in _PATH.finditer(note.read_text(errors="ignore")):
+            raw = m.group(1)
+            cand = pathlib.Path(raw.replace("~", str(pathlib.Path.home()), 1)) if raw.startswith("~") \
+                else (pathlib.Path(repo) / raw.lstrip("./"))
+            try:
+                cand = cand.resolve()
+            except OSError:
+                continue
+            if cand in seen or not cand.is_file():
+                continue
+            if cand.suffix in TRANSCRIPT_SUFFIXES:
+                continue
+            if not any(str(cand).startswith(str(r)) for r in roots):
+                continue
+            seen.add(cand)
+            out.append(cand)
+            if len(out) >= MAX_REFERENCED:
+                return out
+    return out
+
+
 def excluded_count(repo: pathlib.Path) -> int:
     """How much was deliberately not read — worth stating in the extraction report."""
     d = state_dir(repo)
@@ -60,4 +98,8 @@ if __name__ == "__main__":
             print(f"            {f.relative_to(d)}")
         if len(files) > 6:
             print(f"            … and {len(files) - 6} more")
+        ref = referenced(r)
+        print(f"referenced: {len(ref)} file(s) named by a note and existing")
+        for f in ref[:6]:
+            print(f"            {f}")
         print(f"excluded  : {excluded_count(r)} session transcripts — never read")

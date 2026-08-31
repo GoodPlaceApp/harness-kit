@@ -29,8 +29,11 @@ commits. For a document source, read the whole document — do not sample.
 
 **A project's harness has a user-level half, and it is easy to miss entirely.** Durable
 memory, accumulated preferences and the rules a human gave by *correcting* an agent rather
-than by writing a document live beside the tool, not inside the repository. Run
-`python3 {KIT}/tools/user_state.py <repo>` to locate them, and read what it lists.
+than by writing a document live beside the tool, not inside the repository. Run `python3 {KIT}/tools/user_state.py <repo>` to locate them, and read what it lists —
+both the durable notes and any file a note **names by path**. That second list matters: full
+working plans routinely live outside the note store, in a directory shared by every project,
+which is why the tool follows a reference rather than reading that directory wholesale. A
+note in this project's store named this file, so this file is about this project.
 
 Two hard rules there. **Read only what that tool returns** — the same directory holds one
 transcript per session, enormous and containing every keystroke including anything pasted
