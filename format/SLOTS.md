@@ -70,9 +70,11 @@ branch names in `git log`, the shape of recent merge commits, any testing sectio
 | `method.test-selection` | How is the right subset of tests chosen for a given change? | always |
 | `method.ai-test-quality` | How is the quality of machine-written tests itself checked? | has-agents |
 | `method.review-standard` | What bar must a change clear to be approved? | always |
+| `method.review-exemption` | Which changes are exempt from review entirely, and who decides that? | always |
 | `method.verification` | What counts as "seen working" beyond a green suite? | always |
 | `method.regression` | What must accompany a bugfix? | always |
 | `method.refactor` | What cleanup needs no permission, and how is it kept apart from behaviour change? | always |
+| `method.propagation` | How does one fix reach every place that needs it when the work spans more than one repository? | is-multi-repo |
 | `method.debt` | How is known-bad code recorded, and what triggers repaying it? | always |
 | `method.rollback` | How is a bad change undone, and within what time budget? | has-production |
 | `method.schema-change` | How do persistent-data changes ship, and how do they roll back? | has-schema |
@@ -146,6 +148,7 @@ user-level state directory**, which holds durable memory outside the repository.
 | `work.danger-list` | Where is the register of things not to change without understanding? | always |
 | `work.research-cache` | Where does external research land so it is not re-fetched? | always |
 | `work.memory` | What knowledge outlives a session without living in the repository, and what belongs there rather than in the docs? | always |
+| `work.plans` | Where does a working plan produced mid-session live once the session ends? | has-agents |
 | `work.queue` | Where do ready-to-run task prompts live, and when is one removed? | has-agents |
 
 ---
@@ -202,10 +205,11 @@ config in CI, secret-management setup, privacy or retention docs, third-party in
 |---|---|---|
 | `trust.threat-model` | Who or what is this defended against, and what is out of scope? | always |
 | `trust.secrets` | How is secret material stored, injected and rotated? | always |
+| `trust.key-material` | What must be true before signing or key material may enter version control at all? | always |
 | `trust.least-privilege` | What is the minimum access each actor gets, and who has more than that? | always |
 | `trust.scanning` | What scans for vulnerabilities and leaked secrets, and when? | always |
 | `trust.cve` | How fast must a known vulnerability be answered? | has-deps |
-| `trust.deps` | How are dependencies chosen, updated and vetted before adoption? | has-deps |
+| `trust.deps` | How are dependencies chosen, updated and vetted before adoption, and how is a rejection recorded so it is not re-proposed? | has-deps |
 | `trust.provenance` | What proves the running artifact came from this source? | has-production, is-public |
 | `trust.third-party-agents` | How is a third-party MCP server, plugin or skill trusted before use? | has-agents |
 | `trust.pii` | What personal data is held, and how is it classified? | handles-user-data |
@@ -224,6 +228,7 @@ referenced in docs, any budget or cost-review file, infrastructure sizing.
 |---|---|---|
 | `econ.budget` | What is the spend ceiling, and what happens when it is reached? | costs-money |
 | `econ.unit-cost` | What does one run, one feature, or one model call cost? | costs-money |
+| `econ.revenue` | How does the product earn, and what governs the trade-off between earning and experience? | has-users |
 | `econ.review` | How often is spend reviewed, and against what baseline? | costs-money |
 | `econ.tradeoff` | When is money spent to save time, and when is the reverse correct? | costs-money |
 
@@ -277,3 +282,19 @@ risks or deferred verifications, the rationale attached to standing rules.
 | `refl.falsification` | What evidence would show a rule here is wrong? | always |
 | `refl.risk-register` | Which known risks are accepted, and when does each acceptance expire? | always |
 | `refl.rule-origin` | Does every standing rule record why it exists? | always |
+
+---
+
+## Considered and rejected
+
+Candidates that reached the admission test and did not pass, kept in the spirit of an idea
+graveyard: a rejection with a reason is what stops the same question being proposed again in
+six months.
+
+| Candidate question | Why not a slot | Where the answer belongs |
+|---|---|---|
+| How is a new dependency, server or extension vetted before first adoption? | Already asked, verbatim, by an existing slot. The reported gap was in the *answers* — no source consulted had one — not in the vocabulary. That slot was reworded to add the one genuinely unasked part: recording a rejection. | `trust.deps` |
+| What naming scheme identifies an interface element for automated test discovery? | An answer, not a question. A tooling-facing identifier scheme is one way to answer the handles question; the objection that `conv.handles` is framed around identifiers that must never be repointed is a wording problem in that slot, not grounds for a new one. | `conv.handles` |
+| How is disabled instrumentation recorded and eventually removed rather than left commented out? | Known-bad code retained deliberately, with a rationale and a route to removal, is exactly the debt register. Narrowing it to instrumentation would turn the vocabulary into a taxonomy of code smells. | `method.debt` |
+| How is a credential expiry mid-task handled without losing the in-flight decision? | Continuity of work across a failure is already asked; a credential expiry is one cause among many. The recovery answer — commit intermediate state, salvage rather than restart — applies unchanged. | `agents.recovery` |
+| How is tracker-complete work reconciled against what actually reached trunk? | Only arises where a tracker and a repository can disagree, which makes it situational rather than standing. Ruled 2026-08-31. A project it affects should answer it inside its worklist element. | `gov.worklist` |

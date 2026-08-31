@@ -73,7 +73,7 @@ answers "will this be true once this pack is applied", not "is this true now".
 
 So apply asks rather than detects wherever the two readings diverge. The rule of thumb:
 predicates about **circumstance** — `has-production`, `has-users`, `handles-user-data`,
-`has-schema`, `is-multi-env`, `costs-money`, `is-public` — are detected, because intent
+`has-schema`, `is-multi-env` · `is-multi-repo`, `costs-money`, `is-public` — are detected, because intent
 does not change them. Predicates about **practice** — `has-agents` above all — are
 intentions, and are confirmed with the human in the single question round.
 

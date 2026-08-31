@@ -1,6 +1,6 @@
 # Pack format
 
-**Format version: 1.1**
+**Format version: 1.2**
 
 A *pack* is a portable description of how a project is worked on. It is produced by
 `extract` (from a repo) or `ingest` (from documents, URLs, or a research topic), consumed by
@@ -182,3 +182,28 @@ project's user-level state directory and were never opened.
 **Packs built at 1.0 stay valid.** The new slot simply appears as an unanswered gap in each
 of them, which is the honest state and the signal for which projects are worth re-scouting.
 Also allows list-form `provenance` for elements fused by `merge`.
+
+### 1.1 → 1.2
+
+Adds five slots, promoted from findings an extraction of a commercial Android client parked
+as `unhoused` because no slot asked them:
+
+- `method.review-exemption` — which changes clear no review bar at all, which is a different
+  decision from what bar the rest must clear.
+- `method.propagation` — how one fix reaches every place that needs it across more than one
+  repository. The vocabulary had assumed a single repository throughout.
+- `work.plans` — where a working plan produced mid-session lives once the session ends. A
+  third knowledge home, distinct from the repository and from durable memory.
+- `trust.key-material` — what must be true before signing or key material may enter version
+  control. Distinct from scanning, which is detection after the fact.
+- `econ.revenue` — how the product earns. Economics asked only what things cost, leaving a
+  whole dimension of any commercial product unhoused.
+
+Adds the applicability predicate `is-multi-repo`, so the propagation question is *excluded*
+for a single-repository project rather than reported as a false gap.
+
+Rewords `trust.deps` to name recording a rejection. Five further candidates were considered
+and rejected; they are listed at the foot of `SLOTS.md` with the slot each belongs to, so the
+same questions are not re-proposed.
+
+**Packs built at 1.1 stay valid**, gaining these as honest gaps or profile exclusions.

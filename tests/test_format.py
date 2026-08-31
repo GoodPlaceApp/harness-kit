@@ -7,6 +7,7 @@ FMT = ROOT / "format"
 PREDICATES = {
     "always", "has-agents", "has-production", "has-users", "handles-user-data",
     "has-ui", "is-public", "has-deps", "has-schema", "is-multi-env", "costs-money",
+    "is-multi-repo",
     "profile",
 }
 SLOT_ROW = re.compile(r"^\| `([a-z0-9._-]+)` \| (.+?) \| (.+?) \|\s*$", re.M)
