@@ -195,3 +195,19 @@ def test_corroboration_never_exceeds_the_origins_named(pack):
     assert not over, (
         f"{path.name}: elements claiming more independent sources than they name "
         f"(slot, claimed, named): {over}")
+
+
+def test_no_check_can_never_match(pack):
+    """`grep -qi 'a|b'` searches for the literal string a|b, and `\\|` is GNU-only, so a
+    check written either way silently never matches and reports the practice absent.
+    Alternation is portable only with -E and a bare pipe. Thirty-three checks across three
+    packs were written this way before the first audit run found them."""
+    path, man = pack
+    bad = []
+    for e in man["elements"]:
+        c = e.get("check") or ""
+        for g in re.finditer(r"grep\s+(-[a-zA-Z]+)\s+'([^']*)'", c):
+            flags, pat = g.group(1), g.group(2)
+            if ("|" in pat or "\\|" in pat) and "E" not in flags and "P" not in flags:
+                bad.append((e["slot"], pat[:40]))
+    assert not bad, f"{path.name}: checks that can never match — use -E: {bad}"

@@ -154,6 +154,15 @@ every conflict card and its answer. Writing the accounting only into the report 
 Recompute all of it against the merged applicability profile rather than inheriting either
 input's.
 
+**A fused element's check must not assert more than either origin did.** Fusing two
+statements produces one that asserts more than either source observed, and if the check is
+fused the same way it will fail against *both* sources — which is not drift, it is the merge
+having invented a standard neither project meets. The first audit run made this concrete: 16
+of 27 unsatisfied checks were on fused elements. So a fused check is the **union** of its
+origins — `<check-a> || <check-b>` — passing when either signature is present. Where the two
+cannot be combined, set it to null and say so in `notes`: no check is honest, and a check
+nothing can satisfy is worse than none.
+
 **Fused elements record both origins structurally.** A reconciled element's `provenance`
 becomes a list, one entry per contributing source, each keeping its own `ref`, `evidence` and
 `corroboration`. Prose in `notes` is not sufficient: the whole point of tracking independence
