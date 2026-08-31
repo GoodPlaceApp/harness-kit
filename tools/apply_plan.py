@@ -20,6 +20,25 @@ def applies(pred, profile):
     return any(profile["applies"].get(p.strip()) for p in str(pred).split(","))
 
 
+def bindings_needed(pack, elements, stack):
+    """The COMPLETE interview list: bindings named by applying elements, plus every
+    placeholder inside the mechanism templates those elements will instantiate. The dummy
+    apply run proved the second half matters — 18 declared bindings surfaced only at write
+    time, as broken markers in written files, because the plan never asked about them."""
+    import re
+    need = set()
+    for e in elements:
+        need |= set(e.get("bindings") or [])
+        for m in (e.get("mechanisms") or []):
+            f = pack / m
+            if not f.exists() or not f.name.endswith(".tmpl"):
+                continue
+            if not recipe_matches(recipe_of(pack, m), stack):
+                continue
+            need |= set(re.findall(r"\{([a-z_]+)\}", f.read_text(errors="ignore")))
+    return sorted(need)
+
+
 def recipe_of(pack, mech_path):
     p = pack / mech_path
     if not p.exists():
@@ -88,6 +107,10 @@ def main():
     owed = counts["DEFER"] + counts["STUB"] + counts["PARTIAL"]
     print(f"  {counts['APPLY']} applied · {owed} owed by the target · "
           f"{counts['SKIP']} not applicable · {total} elements considered")
+    applying = [e for st, e, _ in rows if st in ("APPLY", "PARTIAL")]
+    need = bindings_needed(pack, applying, stack)
+    print(f"  interview: {len(need)} bindings to resolve before writing "
+          f"(elements and their templates)")
     if counts["SKIP"]:
         print("  (skipped elements are excluded by profile, not failures)")
 

@@ -122,6 +122,11 @@ def test_every_binding_used_is_declared_and_every_declared_binding_used(pack):
         used |= set(e.get("bindings") or [])
         for f in ("check", "statement", "notes"):
             used |= set(re.findall(r"\{([a-z_]+)\}", str(e.get(f) or "")))
+    mech = path / "mechanisms"
+    if mech.exists():
+        for f in sorted(mech.rglob("*.tmpl")):
+            text = re.sub(r"%\{[a-z_]+\}", "", f.read_text(errors="ignore"))
+            used |= set(re.findall(r"\{([a-z_]+)\}", text))
     used.discard("FEATURE")
     assert not (used - declared), f"{path.name}: undeclared bindings: {sorted(used - declared)}"
     assert not (declared - used), f"{path.name}: unused bindings: {sorted(declared - used)}"
@@ -211,3 +216,20 @@ def test_no_check_can_never_match(pack):
             if ("|" in pat or "\\|" in pat) and "E" not in flags and "P" not in flags:
                 bad.append((e["slot"], pat[:40]))
     assert not bad, f"{path.name}: checks that can never match — use -E: {bad}"
+
+
+def test_every_tmpl_placeholder_is_a_declared_binding(pack):
+    """`{name}` in a template is a binding by convention, and apply substitutes only
+    declared bindings — so an undeclared one survives into written files as a broken
+    marker. Found by the first apply run. Contract `.md` files are exempt because code
+    inside them legitimately uses braces."""
+    path, man = pack
+    declared = {b["id"] for b in
+                yaml.safe_load((path / "bindings.yaml").read_text())["bindings"]}
+    bad = []
+    for f in sorted((path / "mechanisms").rglob("*.tmpl")) if (path / "mechanisms").exists() else []:
+        text = re.sub(r"%\{[a-z_]+\}", "", f.read_text(errors="ignore"))  # curl -w syntax
+        for m in re.finditer(r"\{([a-z_]+)\}", text):
+            if m.group(1) not in declared:
+                bad.append((f.name, m.group(1)))
+    assert not bad, f"{path.name}: undeclared placeholders in templates: {sorted(set(bad))}"

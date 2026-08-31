@@ -163,6 +163,15 @@ origins — `<check-a> || <check-b>` — passing when either signature is presen
 cannot be combined, set it to null and say so in `notes`: no check is honest, and a check
 nothing can satisfy is worse than none.
 
+**Fused elements keep both origins' mechanisms.** A mechanism is a recipe, and two origins'
+recipes serve different targets — a brief template shaped by one project's build is not a
+degenerate copy of the other's. Where both origins carry a mechanism for the same purpose,
+the merged pack keeps both, suffixed by origin, and apply picks whichever matches the
+target. Keeping only one side's file re-specialises the pack toward that side silently: the
+first apply run wrote one source project's brief template, with that project's bindings, into
+a target that had never seen it. The merged `bindings.yaml` must cover every `{placeholder}`
+in every kept `.tmpl`.
+
 **Fused elements record both origins structurally.** A reconciled element's `provenance`
 becomes a list, one entry per contributing source, each keeping its own `ref`, `evidence` and
 `corroboration`. Prose in `notes` is not sufficient: the whole point of tracking independence

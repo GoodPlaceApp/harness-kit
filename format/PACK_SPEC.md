@@ -88,6 +88,12 @@ One element answers one slot. Elements are the unit of merge, of apply, and of a
   correctly overrule later.
 - **`evidence`** — see below. **`provenance.quote`** is mandatory for every non-project
   source: an element that cannot quote its origin is downgraded to `derived`.
+- **Placeholder convention, binding in `.tmpl` files.** `{name}` is a binding and MUST be
+  declared in `bindings.yaml` — apply substitutes declared bindings and nothing else, so an
+  undeclared brace is a format error rather than a guess. `<name>` is an authoring blank a
+  human fills when adapting the file, and apply leaves it alone. Contract documents (`.md`)
+  may contain code whose own brace syntax collides — curl's `%{http_code}`, template
+  literals — which is why only `.tmpl` files carry the obligation.
 - **`mechanisms` is a list of plain path strings**, relative to the pack root. The tier is
   *not* repeated per entry: each mechanism file states its own tier in its header comment,
   and duplicating it here would give one fact two homes — which `work.one-home` forbids.
