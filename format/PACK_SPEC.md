@@ -68,9 +68,8 @@ One element answers one slot. Elements are the unit of merge, of apply, and of a
   evidence: production                   # production | documented | claimed | derived
   corroboration: 1                       # independent sources asserting this
   bindings: [reviewer_model, integration_branch]
-  mechanisms:
-    - path: mechanisms/agents/reviewer.md.tmpl
-      tier: U
+  mechanisms:                            # plain paths, relative to the pack root
+    - mechanisms/agents/reviewer.md.tmpl
   check: "ls .claude/agents/ 2>/dev/null | grep -qi review"
   conflicts_with: []                     # element ids known to be incompatible
   notes: null
@@ -89,6 +88,9 @@ One element answers one slot. Elements are the unit of merge, of apply, and of a
   correctly overrule later.
 - **`evidence`** — see below. **`provenance.quote`** is mandatory for every non-project
   source: an element that cannot quote its origin is downgraded to `derived`.
+- **`mechanisms` is a list of plain path strings**, relative to the pack root. The tier is
+  *not* repeated per entry: each mechanism file states its own tier in its header comment,
+  and duplicating it here would give one fact two homes — which `work.one-home` forbids.
 - **`provenance` may be a list** — and must be, for an element fused by `merge` from two
   sources. Each entry keeps its own `ref`, `evidence` and `corroboration`. The element's
   top-level `corroboration` then equals the number of independent origins listed, and a

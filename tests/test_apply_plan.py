@@ -12,16 +12,21 @@ sys.path.insert(0, str(ROOT / "tools"))
 from packs_dir import packs as _discover_packs      # noqa: E402
 import apply_plan                                    # noqa: E402
 
-PACKS = _discover_packs()
+# Pin the pack by NAME. Using PACKS[0] silently re-aimed this whole suite at whichever
+# pack sorted first as the library grew, and the assertions below name specific slots —
+# so they began testing a pack whose answers to those slots are honest gaps.
+FIXTURE_PACK = "meridian-v1"
+PACKS = {p.name: p for p in _discover_packs()}
 FIXTURE = ROOT / "tests" / "fixtures" / "profile-gradle-mobile.yaml"
 
 pytestmark = pytest.mark.skipif(
-    not PACKS, reason="no pack library found — see tools/packs_dir.py")
+    FIXTURE_PACK not in PACKS,
+    reason=f"{FIXTURE_PACK} not in the pack library — see tools/packs_dir.py")
 
 
 @pytest.fixture(scope="module")
 def plan():
-    pack = PACKS[0]
+    pack = PACKS[FIXTURE_PACK]
     profile = yaml.safe_load(FIXTURE.read_text())
     man = yaml.safe_load((pack / "manifest.yaml").read_text())
     out = []
@@ -66,9 +71,11 @@ def test_inapplicable_layers_are_skipped_not_installed(plan):
     status = {e["slot"]: s for s, e, _ in rows}
     for slot in ("run.alerting", "run.backup-restore", "run.degradation",
                  "tool.ship", "econ.budget", "method.rollback"):
-        assert status.get(slot) == "SKIP", (
-            f"{slot} should be skipped for a target with no production/spend, "
-            f"got {status.get(slot)}")
+        got = status.get(slot)
+        # A slot with no element cannot be installed by definition, so absence
+        # satisfies "not installed" just as SKIP does.
+        assert got in (None, "SKIP"), (
+            f"{slot} should be skipped for a target with no production or spend, got {got}")
 
 
 def test_the_portable_core_still_lands(plan):

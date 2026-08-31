@@ -13,6 +13,8 @@ conversation, enormous, containing every keystroke of every session including an
 pasted into them. They are not harness content, they are a privacy surface, and reading them
 would flood any context they entered. `readable()` returns the safe subset and nothing else.
 """
+from __future__ import annotations   # PEP 604 unions below; stock macOS python3 is 3.9
+
 import sys, pathlib
 
 TRANSCRIPT_SUFFIXES = {".jsonl"}
